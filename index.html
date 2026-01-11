@@ -12,7 +12,6 @@
         .punch-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .punch-btn:active { transform: scale(0.95); opacity: 0.9; }
         .gradient-bg { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
         
         @keyframes modalIn {
             0% { opacity: 0; transform: scale(0.9) translateY(20px); }
@@ -21,7 +20,6 @@
         .animate-modal-in { animation: modalIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         
         button svg, button span { pointer-events: none; }
-        .month-tab.active { background-color: #0f172a; color: white; }
     </style>
 </head>
 <body class="gradient-bg min-h-screen text-slate-900">
@@ -32,15 +30,9 @@
             <div id="statusDot" class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
             <span id="statusText" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">定位初始化...</span>
         </div>
-        <div class="flex gap-2">
-            <!-- 歷史紀錄查詢按鈕 (新增) -->
-            <button id="viewHistoryBtn" class="w-10 h-10 glass-effect rounded-full flex items-center justify-center text-slate-500 border border-white shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            </button>
-            <button id="navAdminBtn" class="w-10 h-10 glass-effect rounded-full flex items-center justify-center text-slate-500 border border-white shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
-            </button>
-        </div>
+        <button id="navAdminBtn" class="w-10 h-10 glass-effect rounded-full flex items-center justify-center text-slate-500 border border-white shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+        </button>
     </nav>
 
     <!-- 主打卡畫面 -->
@@ -68,6 +60,7 @@
             </div>
 
             <div class="pt-4 space-y-4">
+                <!-- 補打卡文字連結 -->
                 <div class="text-center px-2">
                     <p class="text-sm font-bold text-slate-500">
                         如需補打卡，請洽 
@@ -85,20 +78,6 @@
         </div>
     </main>
 
-    <!-- 歷史紀錄介面 (新增) -->
-    <section id="historyView" class="hidden fixed inset-0 z-50 bg-slate-50 flex flex-col p-6">
-        <div class="flex justify-between items-center mb-6 pt-4">
-            <h3 class="text-2xl font-black text-slate-800">歷史紀錄 (近兩月)</h3>
-            <button id="closeHistoryBtn" class="text-slate-400 font-bold px-2 text-xl">✕</button>
-        </div>
-        <!-- 月份切換標籤 -->
-        <div id="monthTabs" class="flex gap-2 mb-6"></div>
-        <!-- 紀錄清單 -->
-        <div id="historyList" class="space-y-4 overflow-y-auto no-scrollbar pb-10 flex-1">
-            <p class="text-center text-slate-400 py-10 font-bold">請稍候...</p>
-        </div>
-    </section>
-
     <!-- 管理端驗證 -->
     <section id="authView" class="hidden fixed inset-0 z-50 bg-white/95 backdrop-blur-md flex items-center justify-center p-8">
         <div class="w-full max-w-sm text-center">
@@ -109,7 +88,7 @@
             </div>
             <div id="adminContent" class="hidden flex flex-col gap-4 mt-4">
                 <p class="text-emerald-600 font-bold mb-2">驗證成功</p>
-                <a id="sheetLink" href="https://docs.google.com/spreadsheets/d/1TW_qsvU_uN7N3K6sFDI-qkEqWvVK9ZIJGXCZbA6U668/edit?gid=0#gid=0" target="_blank" class="w-full py-5 bg-emerald-600 text-white rounded-2xl font-black shadow-lg text-center">開啟 Google 試算表</a>
+                <a id="sheetLink" href="https://docs.google.com/spreadsheets/d/1_vdt9HdNy6sXKzmRvTBIo10tF_HrS9W-FIMvgu8bOKI/edit?gid=0#gid=0" target="_blank" class="w-full py-5 bg-emerald-600 text-white rounded-2xl font-black shadow-lg text-center">開啟 Google 試算表</a>
                 <button id="logoutBtn" class="w-full py-3 text-slate-400 text-sm font-bold">登出並關閉</button>
             </div>
             <button id="authBackBtn" class="mt-8 text-slate-400 font-bold">返回打卡頁面</button>
@@ -128,9 +107,9 @@
         </div>
     </div>
 
-    <!-- 打卡成功提示 -->
+    <!-- 成功與載入遮罩 (省略部分細節保持程式碼精簡) -->
     <div id="successOverlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center px-8 bg-slate-900/60 backdrop-blur-md">
-        <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center shadow-2xl animate-modal-in">
+        <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center shadow-2xl">
             <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 bg-emerald-100 text-emerald-500">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" /></svg>
             </div>
@@ -138,19 +117,17 @@
             <p id="successTeacher" class="text-xl font-bold text-slate-600"></p>
         </div>
     </div>
-
     <div id="loadingOverlay" class="hidden fixed inset-0 z-[300] flex items-center justify-center bg-white/50 backdrop-blur-sm">
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
     </div>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzBIUrIlNyOdNgJxccb2ov_WK2JNiyOoldj9t7jjvqPkQp9bZuQo39jE7r6o4OQjPQt/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxEJtJqFQ4nW9m9TVz1cabuv0mu5xGk3iYWIjWSKk-FjeEyTJy-PHE_u0FaMaWFs-B8/exec";
         const ADMIN_PASSWORD = "860201"; 
         
         const PRESET_LOCS = ['文星文理補習班（大社吉的堡）', '鳳翔文理補習班', '麥克亞綸文理補習班'];
         let activeLocs = JSON.parse(localStorage.getItem('sy_locs_v2')) || PRESET_LOCS;
         let currentGeo = null;
-        let historyData = null; // 儲存查詢到的紀錄
 
         const hide = (id) => document.getElementById(id).classList.add('hidden');
         const show = (id) => document.getElementById(id).classList.remove('hidden');
@@ -170,69 +147,6 @@
             overlay.classList.remove('hidden');
             setTimeout(() => overlay.classList.add('hidden'), 3000);
         }
-
-        // --- 查詢功能邏輯 (新增) ---
-        async function fetchHistory() {
-            const nameEl = document.getElementById('teacherName');
-            const name = nameEl.value.trim();
-            if (!name) { 
-                nameEl.classList.add('border-rose-400'); 
-                document.getElementById('nameError').classList.remove('hidden'); 
-                return; 
-            }
-            
-            show('historyView');
-            document.getElementById('historyList').innerHTML = '<p class="text-center text-slate-400 py-10">資料載入中...</p>';
-            
-            try {
-                const res = await fetch(`${GAS_URL}?teacher=${encodeURIComponent(name)}`);
-                historyData = await res.json();
-                renderTabs();
-                renderHistory(historyData.months[0]);
-            } catch (e) {
-                document.getElementById('historyList').innerHTML = '<p class="text-center text-rose-500 py-10 font-bold">查詢失敗，請檢查網路</p>';
-            }
-        }
-
-        function renderTabs() {
-            const container = document.getElementById('monthTabs');
-            container.innerHTML = historyData.months.map((m, i) => `
-                <button onclick="renderHistory('${m}')" class="month-tab flex-1 py-3 rounded-2xl font-bold transition-all border border-slate-200 ${i===0 ? 'active' : 'bg-white text-slate-500'}">
-                    ${m}
-                </button>
-            `).join('');
-        }
-
-        function renderHistory(month) {
-            // 切換 Tab 樣式
-            document.querySelectorAll('.month-tab').forEach(btn => {
-                const isActive = btn.innerText.trim() === month;
-                btn.classList.toggle('active', isActive);
-                btn.classList.toggle('bg-white', !isActive);
-                btn.classList.toggle('text-slate-500', !isActive);
-            });
-
-            const list = document.getElementById('historyList');
-            const records = historyData.data[month] || [];
-            
-            if (records.length === 0) {
-                list.innerHTML = '<p class="text-center text-slate-400 py-10 font-bold">該月份無打卡紀錄</p>';
-                return;
-            }
-
-            list.innerHTML = records.map(r => `
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex justify-between items-center animate-modal-in">
-                    <div class="space-y-1">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${r.time}</p>
-                        <p class="text-lg font-bold text-slate-800">${r.location}</p>
-                    </div>
-                    <span class="px-3 py-1 rounded-full text-xs font-black ${r.type.includes('上班') ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600'}">
-                        ${r.type.replace('打卡','')}
-                    </span>
-                </div>
-            `).join('');
-        }
-        // --- 查詢功能結束 ---
 
         async function handlePunch(type) {
             const nameEl = document.getElementById('teacherName');
@@ -287,10 +201,6 @@
         document.getElementById('authBackBtn').onclick = () => hide('authView');
         document.getElementById('addLocBtn').onclick = () => show('locModal');
         document.getElementById('closeLocBtn').onclick = () => hide('locModal');
-        
-        // 綁定歷史紀錄按鈕 (新增)
-        document.getElementById('viewHistoryBtn').onclick = fetchHistory;
-        document.getElementById('closeHistoryBtn').onclick = () => hide('historyView');
         
         document.getElementById('confirmLocBtn').onclick = () => {
             const val = document.getElementById('newLocInput').value.trim();
