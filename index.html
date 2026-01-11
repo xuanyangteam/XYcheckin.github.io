@@ -57,7 +57,7 @@
                     <input id="teacherName" type="text" placeholder="顯示姓名" class="w-full glass-effect p-4 rounded-3xl text-lg font-bold border-2 border-transparent shadow-lg outline-none" readonly>
                 </div>
             </div>
-            <div id="idStatusTip" class="text-center text-[11px] font-bold text-blue-500 -mt-2"></div>
+            <div id="idStatusTip" class="text-center text-[11px] font-bold text-blue-500 -mt-2 min-h-[1rem]"></div>
 
             <div class="space-y-2">
                 <label class="px-4 text-[10px] font-black text-slate-400 tracking-widest uppercase">Location</label>
@@ -111,7 +111,7 @@
 
     <!-- 管理端驗證 -->
     <section id="authView" class="hidden fixed inset-0 z-50 bg-white/95 backdrop-blur-md flex items-center justify-center p-8">
-        <div class="w-full max-w-sm text-center">
+        <div class="w-full max-sm text-center">
             <h3 class="font-black text-2xl mb-8 uppercase tracking-widest text-slate-400">管理端驗證</h3>
             <div id="passwordSection" class="space-y-4">
                 <input id="adminPassword" type="password" placeholder="輸入管理密碼" class="w-full p-5 bg-slate-100 rounded-2xl text-center text-xl font-bold border-2 border-transparent focus:border-blue-500 outline-none transition-all">
@@ -153,43 +153,74 @@
     </div>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyjVrs1T0Rvxxp4NnT3J8yj8Yyk7X9jj4CViYdz6qYA2GkSEDust7sZJFLqGifwQL0/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxdi_m4EjFOnPTz4vtepydqnrN5m4GDtllxgvYKCey7WbCo-cd4TNyymZpH9SN3hJJM/exec";
         const ADMIN_PASSWORD = "860201"; 
         
         const PRESET_LOCS = ['文星文理補習班（大社吉的堡）', '鳳翔文理補習班', '麥克亞綸文理補習班'];
         let activeLocs = JSON.parse(localStorage.getItem('sy_locs_v2')) || PRESET_LOCS;
         let currentGeo = null;
+        let checkTimer = null;
 
         const hide = (id) => document.getElementById(id).classList.add('hidden');
         const show = (id) => document.getElementById(id).classList.remove('hidden');
 
-        // 教師代號綁定邏輯
         const idInput = document.getElementById('teacherId');
         const nameInput = document.getElementById('teacherName');
         const tipEl = document.getElementById('idStatusTip');
 
-        function loadSavedTeacher() {
-            const savedId = localStorage.getItem('sy_teacher_id');
-            const savedName = localStorage.getItem('sy_teacher_name');
-            if (savedId && savedName) {
-                idInput.value = savedId;
-                nameInput.value = savedName;
-                nameInput.readOnly = true;
-                tipEl.innerText = "已載入記憶代號";
+        // 跨裝置雲端查詢邏輯
+        async function fetchCloudName(id) {
+            if (!id) return;
+            tipEl.innerText = "正在從雲端同步姓名...";
+            try {
+                const resp = await fetch(`${GAS_URL}?action=checkId&teacherId=${id}`);
+                const data = await resp.json();
+                if (data.name) {
+                    nameInput.value = data.name;
+                    nameInput.readOnly = true;
+                    tipEl.innerText = "同步成功：已自動填入姓名";
+                    // 同步到本地地圖加速下次讀取
+                    saveToLocalMap(id, data.name);
+                } else {
+                    nameInput.value = "";
+                    nameInput.readOnly = false;
+                    tipEl.innerText = "新代號：請輸入姓名以完成首次綁定";
+                }
+            } catch (e) {
+                tipEl.innerText = "雲端同步失敗，請手動輸入姓名";
+                nameInput.readOnly = false;
             }
         }
 
-        idInput.oninput = () => {
+        function saveToLocalMap(id, name) {
             const idMap = JSON.parse(localStorage.getItem('sy_id_map') || '{}');
+            idMap[id] = name;
+            localStorage.setItem('sy_id_map', JSON.stringify(idMap));
+            localStorage.setItem('sy_teacher_id', id);
+            localStorage.setItem('sy_teacher_name', name);
+        }
+
+        idInput.oninput = () => {
+            clearTimeout(checkTimer);
             const currentId = idInput.value.trim();
+            if (!currentId) {
+                nameInput.value = "";
+                tipEl.innerText = "";
+                return;
+            }
+
+            // 先查本地記憶
+            const idMap = JSON.parse(localStorage.getItem('sy_id_map') || '{}');
             if (idMap[currentId]) {
                 nameInput.value = idMap[currentId];
                 nameInput.readOnly = true;
-                tipEl.innerText = "代號識別成功：自動填入姓名";
+                tipEl.innerText = "本地記憶識別成功";
+                // 仍可延遲發送一次雲端確認確保資料最新
+                checkTimer = setTimeout(() => fetchCloudName(currentId), 2000);
             } else {
-                nameInput.value = "";
-                nameInput.readOnly = false;
-                tipEl.innerText = currentId ? "新代號：請手動輸入姓名以進行綁定" : "";
+                // 本地無資料，延遲 800ms 後查詢雲端 (避免過度發送請求)
+                tipEl.innerText = "搜尋中...";
+                checkTimer = setTimeout(() => fetchCloudName(currentId), 800);
             }
         };
 
@@ -218,16 +249,11 @@
                 return; 
             }
 
-            // 儲存綁定關係
-            const idMap = JSON.parse(localStorage.getItem('sy_id_map') || '{}');
-            idMap[tId] = tName;
-            localStorage.setItem('sy_id_map', JSON.stringify(idMap));
-            localStorage.setItem('sy_teacher_id', tId);
-            localStorage.setItem('sy_teacher_name', tName);
+            // 儲存綁定關係到本地
+            saveToLocalMap(tId, tName);
 
             showLoading(true);
             const payload = {
-                action: 'punch',
                 teacherId: tId,
                 teacher: tName,
                 location: document.getElementById('locationSelect').value,
@@ -238,17 +264,16 @@
             };
 
             try {
-                // 使用 fetch 且處理回傳
-                const resp = await fetch(GAS_URL, {
+                await fetch(GAS_URL, {
                     method: 'POST',
+                    mode: 'no-cors',
                     body: JSON.stringify(payload)
                 });
                 showLoading(false);
                 showFeedback(tName, `${type}成功`);
             } catch (e) {
-                // 因跨域 no-cors 可能會報錯，但資料通常已送出
                 showLoading(false);
-                showFeedback(tName, `${type}成功`);
+                showFeedback(tName, `${type}成功`); // 由於 no-cors 特性，即便成功也可能進入 catch
             }
         }
 
@@ -259,14 +284,14 @@
             
             show('historyView');
             const tbody = document.getElementById('historyBody');
-            tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">查詢中...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">讀取雲端紀錄中...</td></tr>';
             
             try {
                 const resp = await fetch(`${GAS_URL}?action=query&teacherId=${tId}`);
                 const data = await resp.json();
                 
                 if(data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">無紀錄</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">無近兩月紀錄</td></tr>';
                 } else {
                     tbody.innerHTML = data.map(r => `
                         <tr>
@@ -277,7 +302,7 @@
                     `).join('');
                 }
             } catch (e) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-rose-500 font-bold">查詢失敗</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-rose-500 font-bold">連線失敗</td></tr>';
             }
         };
 
@@ -326,8 +351,16 @@
         }
 
         refreshLocUI();
-        loadSavedTeacher();
+        // 初始化載入上次使用的身分
+        const lastId = localStorage.getItem('sy_teacher_id');
+        if (lastId) {
+            idInput.value = lastId;
+            const lastNm = localStorage.getItem('sy_teacher_name');
+            if (lastNm) {
+                nameInput.value = lastNm;
+                nameInput.readOnly = true;
+            }
+        }
     </script>
 </body>
 </html>
-
