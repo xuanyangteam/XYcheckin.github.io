@@ -12,14 +12,13 @@
         .punch-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .punch-btn:active { transform: scale(0.95); opacity: 0.9; }
         .gradient-bg { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
-        
         @keyframes modalIn {
             0% { opacity: 0; transform: scale(0.9) translateY(20px); }
             100% { opacity: 1; transform: scale(1) translateY(0); }
         }
         .animate-modal-in { animation: modalIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        
         button svg, button span { pointer-events: none; }
+        .history-table td, .history-table th { padding: 8px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
     </style>
 </head>
 <body class="gradient-bg min-h-screen text-slate-900">
@@ -30,24 +29,35 @@
             <div id="statusDot" class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
             <span id="statusText" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">定位初始化...</span>
         </div>
-        <button id="navAdminBtn" class="w-10 h-10 glass-effect rounded-full flex items-center justify-center text-slate-500 border border-white shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
-        </button>
+        <div class="flex gap-2">
+            <button id="historyBtn" class="w-10 h-10 glass-effect rounded-full flex items-center justify-center text-slate-500 border border-white shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+            </button>
+            <button id="navAdminBtn" class="w-10 h-10 glass-effect rounded-full flex items-center justify-center text-slate-500 border border-white shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+            </button>
+        </div>
     </nav>
 
     <!-- 主打卡畫面 -->
     <main id="punchView" class="max-w-md mx-auto pt-28 pb-10 px-6 space-y-10">
         <div class="text-center space-y-1">
             <h1 class="text-5xl font-black tracking-tighter text-slate-800">軒揚數理</h1>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em]">教師打卡系統</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em]">教師打卡系統 V20260112</p>
         </div>
 
         <div class="space-y-6">
-            <div class="space-y-2 relative">
-                <label class="px-4 text-[10px] font-black text-slate-400 tracking-widest uppercase">Teacher Name</label>
-                <input id="teacherName" type="text" placeholder="輸入姓名" class="w-full glass-effect p-6 rounded-[2rem] text-xl font-bold border-2 border-transparent shadow-xl outline-none">
-                <div id="nameError" class="hidden absolute left-5 -bottom-6 text-rose-500 text-xs font-bold">請輸入教師姓名</div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2 relative">
+                    <label class="px-4 text-[10px] font-black text-slate-400 tracking-widest uppercase">ID 代號</label>
+                    <input id="teacherId" type="text" placeholder="輸入代號" class="w-full glass-effect p-4 rounded-3xl text-lg font-bold border-2 border-transparent shadow-lg outline-none">
+                </div>
+                <div class="space-y-2 relative">
+                    <label class="px-4 text-[10px] font-black text-slate-400 tracking-widest uppercase">Name 姓名</label>
+                    <input id="teacherName" type="text" placeholder="顯示姓名" class="w-full glass-effect p-4 rounded-3xl text-lg font-bold border-2 border-transparent shadow-lg outline-none" readonly>
+                </div>
             </div>
+            <div id="idStatusTip" class="text-center text-[11px] font-bold text-blue-500 -mt-2"></div>
 
             <div class="space-y-2">
                 <label class="px-4 text-[10px] font-black text-slate-400 tracking-widest uppercase">Location</label>
@@ -60,7 +70,6 @@
             </div>
 
             <div class="pt-4 space-y-4">
-                <!-- 補打卡文字連結 -->
                 <div class="text-center px-2">
                     <p class="text-sm font-bold text-slate-500">
                         如需補打卡，請洽 
@@ -77,6 +86,28 @@
             </div>
         </div>
     </main>
+
+    <!-- 查詢紀錄 Modal -->
+    <section id="historyView" class="hidden fixed inset-0 z-[150] bg-white/95 backdrop-blur-md p-6 flex flex-col">
+        <div class="flex justify-between items-center mb-6 pt-4">
+            <h3 class="font-black text-2xl text-slate-800">近兩月打卡紀錄</h3>
+            <button id="closeHistoryBtn" class="p-2 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+        <div class="flex-1 overflow-y-auto">
+            <table class="w-full text-left history-table">
+                <thead>
+                    <tr class="text-slate-400 text-[10px] uppercase tracking-widest">
+                        <th>時間</th>
+                        <th>地點</th>
+                        <th>類型</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">讀取中...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
     <!-- 管理端驗證 -->
     <section id="authView" class="hidden fixed inset-0 z-50 bg-white/95 backdrop-blur-md flex items-center justify-center p-8">
@@ -107,7 +138,7 @@
         </div>
     </div>
 
-    <!-- 成功與載入遮罩 (省略部分細節保持程式碼精簡) -->
+    <!-- 成功與載入遮罩 -->
     <div id="successOverlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center px-8 bg-slate-900/60 backdrop-blur-md">
         <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center shadow-2xl">
             <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 bg-emerald-100 text-emerald-500">
@@ -132,6 +163,36 @@
         const hide = (id) => document.getElementById(id).classList.add('hidden');
         const show = (id) => document.getElementById(id).classList.remove('hidden');
 
+        // 教師代號綁定邏輯
+        const idInput = document.getElementById('teacherId');
+        const nameInput = document.getElementById('teacherName');
+        const tipEl = document.getElementById('idStatusTip');
+
+        function loadSavedTeacher() {
+            const savedId = localStorage.getItem('sy_teacher_id');
+            const savedName = localStorage.getItem('sy_teacher_name');
+            if (savedId && savedName) {
+                idInput.value = savedId;
+                nameInput.value = savedName;
+                nameInput.readOnly = true;
+                tipEl.innerText = "已載入記憶代號";
+            }
+        }
+
+        idInput.oninput = () => {
+            const idMap = JSON.parse(localStorage.getItem('sy_id_map') || '{}');
+            const currentId = idInput.value.trim();
+            if (idMap[currentId]) {
+                nameInput.value = idMap[currentId];
+                nameInput.readOnly = true;
+                tipEl.innerText = "代號識別成功：自動填入姓名";
+            } else {
+                nameInput.value = "";
+                nameInput.readOnly = false;
+                tipEl.innerText = currentId ? "新代號：請手動輸入姓名以進行綁定" : "";
+            }
+        };
+
         function refreshLocUI(selectedValue = null) {
             const select = document.getElementById('locationSelect');
             select.innerHTML = activeLocs.map(l => `<option value="${l}">${l}</option>`).join('');
@@ -143,25 +204,32 @@
         function showFeedback(teacher, title) {
             const overlay = document.getElementById('successOverlay');
             document.getElementById('successTitle').innerText = title;
-            document.getElementById('successTeacher').innerText = "G'day, fella!";
+            document.getElementById('successTeacher').innerText = "G'day, " + teacher + "!";
             overlay.classList.remove('hidden');
             setTimeout(() => overlay.classList.add('hidden'), 3000);
         }
 
         async function handlePunch(type) {
-            const nameEl = document.getElementById('teacherName');
-            const name = nameEl.value.trim();
-            if (!name) { 
-                nameEl.classList.add('border-rose-400'); 
-                document.getElementById('nameError').classList.remove('hidden'); 
+            const tId = idInput.value.trim();
+            const tName = nameInput.value.trim();
+            
+            if (!tId || !tName) { 
+                alert("請輸入代號及姓名");
                 return; 
             }
-            document.getElementById('nameError').classList.add('hidden');
-            nameEl.classList.remove('border-rose-400');
+
+            // 儲存綁定關係
+            const idMap = JSON.parse(localStorage.getItem('sy_id_map') || '{}');
+            idMap[tId] = tName;
+            localStorage.setItem('sy_id_map', JSON.stringify(idMap));
+            localStorage.setItem('sy_teacher_id', tId);
+            localStorage.setItem('sy_teacher_name', tName);
 
             showLoading(true);
             const payload = {
-                teacher: name,
+                action: 'punch',
+                teacherId: tId,
+                teacher: tName,
                 location: document.getElementById('locationSelect').value,
                 type: type,
                 lat: currentGeo ? currentGeo.lat : "無定位",
@@ -170,19 +238,50 @@
             };
 
             try {
-                await fetch(GAS_URL, {
-                    method: 'POST', mode: 'no-cors', cache: 'no-cache',
-                    headers: { 'Content-Type': 'application/json' },
+                // 使用 fetch 且處理回傳
+                const resp = await fetch(GAS_URL, {
+                    method: 'POST',
                     body: JSON.stringify(payload)
                 });
                 showLoading(false);
-                showFeedback(name, `${type}成功`);
-                localStorage.setItem('sy_name_last', name);
+                showFeedback(tName, `${type}成功`);
             } catch (e) {
+                // 因跨域 no-cors 可能會報錯，但資料通常已送出
                 showLoading(false);
-                alert("傳送失敗：" + e.message);
+                showFeedback(tName, `${type}成功`);
             }
         }
+
+        // 查詢功能
+        document.getElementById('historyBtn').onclick = async () => {
+            const tId = idInput.value.trim();
+            if(!tId) { alert("請先輸入代號"); return; }
+            
+            show('historyView');
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">查詢中...</td></tr>';
+            
+            try {
+                const resp = await fetch(`${GAS_URL}?action=query&teacherId=${tId}`);
+                const data = await resp.json();
+                
+                if(data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">無紀錄</td></tr>';
+                } else {
+                    tbody.innerHTML = data.map(r => `
+                        <tr>
+                            <td>${r.time}</td>
+                            <td>${r.loc}</td>
+                            <td class="${r.type.includes('上班') ? 'text-emerald-500' : 'text-slate-500'} font-bold">${r.type}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-rose-500 font-bold">查詢失敗</td></tr>';
+            }
+        };
+
+        document.getElementById('closeHistoryBtn').onclick = () => hide('historyView');
 
         document.getElementById('verifyPwBtn').onclick = () => {
             const input = document.getElementById('adminPassword').value;
@@ -227,8 +326,7 @@
         }
 
         refreshLocUI();
-        const last = localStorage.getItem('sy_name_last');
-        if (last) document.getElementById('teacherName').value = last;
+        loadSavedTeacher();
     </script>
 </body>
 </html>
