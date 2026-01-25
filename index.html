@@ -32,10 +32,7 @@
             <button id="historyBtn" class="w-10 h-10 glass-effect rounded-full flex items-center justify-center text-slate-500 border border-white shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
             </button>
-            <button id="navAdminBtn" class="w-10 h-10 glass-effect rounded-full flex items-center justify-center text-slate-500 border border-white shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
-            </button>
-        </div>
+            </div>
     </nav>
 
     <main id="punchView" class="max-w-md mx-auto pt-28 pb-10 px-6 space-y-10">
@@ -84,22 +81,6 @@
             </div>
         </div>
     </main>
-
-    <section id="authView" class="hidden fixed inset-0 z-50 bg-white/95 backdrop-blur-md flex items-center justify-center p-8">
-        <div class="w-full max-sm text-center">
-            <h3 class="font-black text-2xl mb-8 uppercase tracking-widest text-slate-400">管理端驗證</h3>
-            <div id="passwordSection" class="space-y-4">
-                <input id="adminPassword" type="password" placeholder="輸入管理密碼" class="w-full p-5 bg-slate-100 rounded-2xl text-center text-xl font-bold border-2 border-transparent focus:border-blue-500 outline-none transition-all">
-                <button id="verifyPwBtn" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-black">登入後台</button>
-            </div>
-            <div id="adminContent" class="hidden flex flex-col gap-4 mt-4">
-                <p class="text-emerald-600 font-bold mb-2">驗證成功</p>
-                <a id="sheetLink" href="https://docs.google.com/spreadsheets/d/1_vdt9HdNy6sXKzmRvTBIo10tF_HrS9W-FIMvgu8bOKI/edit?gid=0#gid=0" target="_blank" class="w-full py-5 bg-emerald-600 text-white rounded-2xl font-black shadow-lg text-center">開啟 Google 試算表</a>
-                <button id="logoutBtn" class="w-full py-3 text-slate-400 text-sm font-bold">登出並關閉</button>
-            </div>
-            <button id="authBackBtn" class="mt-8 text-slate-400 font-bold">返回打卡頁面</button>
-        </div>
-    </section>
 
     <section id="historyView" class="hidden fixed inset-0 z-[150] bg-white/95 backdrop-blur-md p-6 flex flex-col">
         <div class="flex justify-between items-center mb-6 pt-4">
@@ -210,7 +191,6 @@
             }
         };
 
-        // 打卡與 UI 邏輯
         function refreshLocUI(selectedValue = null) {
             const select = document.getElementById('locationSelect');
             select.innerHTML = activeLocs.map(l => `<option value="${l}">${l}</option>`).join('');
@@ -253,28 +233,7 @@
             }
         }
 
-        // 後端管理驗證 (安全版)
-        document.getElementById('verifyPwBtn').onclick = async () => {
-            const pw = document.getElementById('adminPassword').value;
-            if(!pw) return;
-            showLoading(true);
-            try {
-                const resp = await fetch(`${GAS_URL}?action=verifyAdmin&password=${encodeURIComponent(pw)}`);
-                const result = await resp.json();
-                showLoading(false);
-                if (result.success) {
-                    hide('passwordSection'); show('adminContent');
-                    document.getElementById('adminPassword').value = "";
-                } else {
-                    alert("密碼錯誤！");
-                }
-            } catch (e) {
-                showLoading(false);
-                alert("驗證通訊失敗");
-            }
-        };
-
-        // 其他頁面切換按鈕
+        // 歷史紀錄按鈕邏輯
         document.getElementById('historyBtn').onclick = async () => {
             const tId = idInput.value.trim();
             if(!tId) { alert("請先輸入代號"); return; }
@@ -288,9 +247,7 @@
             } catch (e) { tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-rose-500 font-bold">讀取失敗</td></tr>'; }
         };
 
-        document.getElementById('logoutBtn').onclick = () => { hide('adminContent'); show('passwordSection'); hide('authView'); };
-        document.getElementById('navAdminBtn').onclick = () => show('authView');
-        document.getElementById('authBackBtn').onclick = () => hide('authView');
+        // UI 關閉事件
         document.getElementById('closeHistoryBtn').onclick = () => hide('historyView');
         document.getElementById('addLocBtn').onclick = () => show('locModal');
         document.getElementById('closeLocBtn').onclick = () => hide('locModal');
