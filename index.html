@@ -23,7 +23,6 @@
 </head>
 <body class="gradient-bg min-h-screen text-slate-900">
 
-    <!-- 狀態列 -->
     <nav class="fixed top-0 inset-x-0 z-40 px-6 py-6 flex justify-between items-center">
         <div class="flex items-center gap-2 glass-effect px-4 py-2 rounded-full border border-white shadow-sm">
             <div id="statusDot" class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
@@ -39,11 +38,10 @@
         </div>
     </nav>
 
-    <!-- 主打卡畫面 -->
     <main id="punchView" class="max-w-md mx-auto pt-28 pb-10 px-6 space-y-10">
         <div class="text-center space-y-1">
             <h1 class="text-5xl font-black tracking-tighter text-slate-800">軒揚數理</h1>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em]">教師打卡系統 V20260112</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em]">教師打卡系統 V20260126</p>
         </div>
 
         <div class="space-y-6">
@@ -87,29 +85,6 @@
         </div>
     </main>
 
-    <!-- 查詢紀錄 Modal -->
-    <section id="historyView" class="hidden fixed inset-0 z-[150] bg-white/95 backdrop-blur-md p-6 flex flex-col">
-        <div class="flex justify-between items-center mb-6 pt-4">
-            <h3 class="font-black text-2xl text-slate-800">近兩月打卡紀錄</h3>
-            <button id="closeHistoryBtn" class="p-2 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-        </div>
-        <div class="flex-1 overflow-y-auto">
-            <table class="w-full text-left history-table">
-                <thead>
-                    <tr class="text-slate-400 text-[10px] uppercase tracking-widest">
-                        <th>時間</th>
-                        <th>地點</th>
-                        <th>類型</th>
-                    </tr>
-                </thead>
-                <tbody id="historyBody">
-                    <tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">讀取中...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- 管理端驗證 -->
     <section id="authView" class="hidden fixed inset-0 z-50 bg-white/95 backdrop-blur-md flex items-center justify-center p-8">
         <div class="w-full max-sm text-center">
             <h3 class="font-black text-2xl mb-8 uppercase tracking-widest text-slate-400">管理端驗證</h3>
@@ -126,7 +101,25 @@
         </div>
     </section>
 
-    <!-- 新增地點 Modal -->
+    <section id="historyView" class="hidden fixed inset-0 z-[150] bg-white/95 backdrop-blur-md p-6 flex flex-col">
+        <div class="flex justify-between items-center mb-6 pt-4">
+            <h3 class="font-black text-2xl text-slate-800">近兩月打卡紀錄</h3>
+            <button id="closeHistoryBtn" class="p-2 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+        </div>
+        <div class="flex-1 overflow-y-auto">
+            <table class="w-full text-left history-table">
+                <thead>
+                    <tr class="text-slate-400 text-[10px] uppercase tracking-widest">
+                        <th>時間</th>
+                        <th>地點</th>
+                        <th>類型</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+        </div>
+    </section>
+
     <div id="locModal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-900/80 backdrop-blur-sm">
         <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center space-y-4 shadow-2xl animate-modal-in">
             <h3 class="text-xl font-black text-slate-800">新增打卡地點</h3>
@@ -138,7 +131,6 @@
         </div>
     </div>
 
-    <!-- 成功與載入遮罩 -->
     <div id="successOverlay" class="hidden fixed inset-0 z-[200] flex items-center justify-center px-8 bg-slate-900/60 backdrop-blur-md">
         <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center shadow-2xl">
             <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 bg-emerald-100 text-emerald-500">
@@ -148,14 +140,13 @@
             <p id="successTeacher" class="text-xl font-bold text-slate-600"></p>
         </div>
     </div>
+
     <div id="loadingOverlay" class="hidden fixed inset-0 z-[300] flex items-center justify-center bg-white/50 backdrop-blur-sm">
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
     </div>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxdi_m4EjFOnPTz4vtepydqnrN5m4GDtllxgvYKCey7WbCo-cd4TNyymZpH9SN3hJJM/exec";
-        const ADMIN_PASSWORD = "860201"; 
-        
+        const GAS_URL = "<?= scriptUrl ?>";
         const PRESET_LOCS = ['文星文理補習班（大社吉的堡）', '鳳翔文理補習班', '麥克亞綸文理補習班'];
         let activeLocs = JSON.parse(localStorage.getItem('sy_locs_v2')) || PRESET_LOCS;
         let currentGeo = null;
@@ -164,11 +155,11 @@
         const hide = (id) => document.getElementById(id).classList.add('hidden');
         const show = (id) => document.getElementById(id).classList.remove('hidden');
 
+        // 姓名查詢邏輯
         const idInput = document.getElementById('teacherId');
         const nameInput = document.getElementById('teacherName');
         const tipEl = document.getElementById('idStatusTip');
 
-        // 跨裝置雲端查詢邏輯
         async function fetchCloudName(id) {
             if (!id) return;
             tipEl.innerText = "正在從雲端同步姓名...";
@@ -179,7 +170,6 @@
                     nameInput.value = data.name;
                     nameInput.readOnly = true;
                     tipEl.innerText = "同步成功：已自動填入姓名";
-                    // 同步到本地地圖加速下次讀取
                     saveToLocalMap(id, data.name);
                 } else {
                     nameInput.value = "";
@@ -208,29 +198,26 @@
                 tipEl.innerText = "";
                 return;
             }
-
-            // 先查本地記憶
             const idMap = JSON.parse(localStorage.getItem('sy_id_map') || '{}');
             if (idMap[currentId]) {
                 nameInput.value = idMap[currentId];
                 nameInput.readOnly = true;
                 tipEl.innerText = "本地記憶識別成功";
-                // 仍可延遲發送一次雲端確認確保資料最新
                 checkTimer = setTimeout(() => fetchCloudName(currentId), 2000);
             } else {
-                // 本地無資料，延遲 800ms 後查詢雲端 (避免過度發送請求)
                 tipEl.innerText = "搜尋中...";
                 checkTimer = setTimeout(() => fetchCloudName(currentId), 800);
             }
         };
 
+        // 打卡與 UI 邏輯
         function refreshLocUI(selectedValue = null) {
             const select = document.getElementById('locationSelect');
             select.innerHTML = activeLocs.map(l => `<option value="${l}">${l}</option>`).join('');
             if (selectedValue) select.value = selectedValue;
         }
 
-        function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('hidden', !show); }
+        function showLoading(s) { document.getElementById('loadingOverlay').classList.toggle('hidden', !s); }
 
         function showFeedback(teacher, title) {
             const overlay = document.getElementById('successOverlay');
@@ -243,89 +230,70 @@
         async function handlePunch(type) {
             const tId = idInput.value.trim();
             const tName = nameInput.value.trim();
-            
-            if (!tId || !tName) { 
-                alert("請輸入代號及姓名");
-                return; 
-            }
-
-            // 儲存綁定關係到本地
+            if (!tId || !tName) { alert("請輸入代號及姓名"); return; }
             saveToLocalMap(tId, tName);
-
             showLoading(true);
+
             const payload = {
-                teacherId: tId,
-                teacher: tName,
+                teacherId: tId, teacher: tName,
                 location: document.getElementById('locationSelect').value,
                 type: type,
                 lat: currentGeo ? currentGeo.lat : "無定位",
                 lng: currentGeo ? currentGeo.lng : "無定位",
-                accuracy: currentGeo ? currentGeo.accuracy : "無定位"
+                accuracy: currentGeo ? currentGeo.accuracy : "無"
             };
 
             try {
-                await fetch(GAS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify(payload)
-                });
+                await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
                 showLoading(false);
                 showFeedback(tName, `${type}成功`);
             } catch (e) {
                 showLoading(false);
-                showFeedback(tName, `${type}成功`); // 由於 no-cors 特性，即便成功也可能進入 catch
+                showFeedback(tName, `${type}成功`);
             }
         }
 
-        // 查詢功能
+        // 後端管理驗證 (安全版)
+        document.getElementById('verifyPwBtn').onclick = async () => {
+            const pw = document.getElementById('adminPassword').value;
+            if(!pw) return;
+            showLoading(true);
+            try {
+                const resp = await fetch(`${GAS_URL}?action=verifyAdmin&password=${encodeURIComponent(pw)}`);
+                const result = await resp.json();
+                showLoading(false);
+                if (result.success) {
+                    hide('passwordSection'); show('adminContent');
+                    document.getElementById('adminPassword').value = "";
+                } else {
+                    alert("密碼錯誤！");
+                }
+            } catch (e) {
+                showLoading(false);
+                alert("驗證通訊失敗");
+            }
+        };
+
+        // 其他頁面切換按鈕
         document.getElementById('historyBtn').onclick = async () => {
             const tId = idInput.value.trim();
             if(!tId) { alert("請先輸入代號"); return; }
-            
             show('historyView');
             const tbody = document.getElementById('historyBody');
-            tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">讀取雲端紀錄中...</td></tr>';
-            
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">讀取中...</td></tr>';
             try {
                 const resp = await fetch(`${GAS_URL}?action=query&teacherId=${tId}`);
                 const data = await resp.json();
-                
-                if(data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">無近兩月紀錄</td></tr>';
-                } else {
-                    tbody.innerHTML = data.map(r => `
-                        <tr>
-                            <td>${r.time}</td>
-                            <td>${r.loc}</td>
-                            <td class="${r.type.includes('上班') ? 'text-emerald-500' : 'text-slate-500'} font-bold">${r.type}</td>
-                        </tr>
-                    `).join('');
-                }
-            } catch (e) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-rose-500 font-bold">連線失敗</td></tr>';
-            }
+                tbody.innerHTML = data.length ? data.map(r => `<tr><td>${r.time}</td><td>${r.loc}</td><td class="${r.type.includes('上班') ? 'text-emerald-500' : 'text-slate-500'} font-bold">${r.type}</td></tr>`).join('') : '<tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">無紀錄</td></tr>';
+            } catch (e) { tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-rose-500 font-bold">讀取失敗</td></tr>'; }
         };
 
-        document.getElementById('closeHistoryBtn').onclick = () => hide('historyView');
-
-        document.getElementById('verifyPwBtn').onclick = () => {
-            const input = document.getElementById('adminPassword').value;
-            if (input === ADMIN_PASSWORD) {
-                hide('passwordSection'); show('adminContent');
-            } else {
-                alert("密碼錯誤！");
-            }
-        };
-
-        document.getElementById('logoutBtn').onclick = () => {
-            hide('adminContent'); show('passwordSection'); hide('authView');
-        };
-
+        document.getElementById('logoutBtn').onclick = () => { hide('adminContent'); show('passwordSection'); hide('authView'); };
         document.getElementById('navAdminBtn').onclick = () => show('authView');
         document.getElementById('authBackBtn').onclick = () => hide('authView');
+        document.getElementById('closeHistoryBtn').onclick = () => hide('historyView');
         document.getElementById('addLocBtn').onclick = () => show('locModal');
         document.getElementById('closeLocBtn').onclick = () => hide('locModal');
-        
         document.getElementById('confirmLocBtn').onclick = () => {
             const val = document.getElementById('newLocInput').value.trim();
             if (val && !activeLocs.includes(val)) {
@@ -345,21 +313,15 @@
                 currentGeo = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: Math.round(pos.coords.accuracy) };
                 document.getElementById('statusDot').className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]";
                 document.getElementById('statusText').innerText = `定位正常 (${currentGeo.accuracy}m)`;
-            }, () => {
-                document.getElementById('statusText').innerText = "定位失敗，請開啟GPS";
-            }, { enableHighAccuracy: true });
+            }, () => { document.getElementById('statusText').innerText = "定位失敗，請開啟GPS"; }, { enableHighAccuracy: true });
         }
 
         refreshLocUI();
-        // 初始化載入上次使用的身分
         const lastId = localStorage.getItem('sy_teacher_id');
         if (lastId) {
             idInput.value = lastId;
             const lastNm = localStorage.getItem('sy_teacher_name');
-            if (lastNm) {
-                nameInput.value = lastNm;
-                nameInput.readOnly = true;
-            }
+            if (lastNm) { nameInput.value = lastNm; nameInput.readOnly = true; }
         }
     </script>
 </body>
